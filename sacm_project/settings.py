@@ -1,29 +1,19 @@
-"""
-Django settings for sacm_project project.
-"""
-
-import os  # <--- 1. إضافة مكتبة os ضرورية لقراءة المتغيرات
+import os
 from pathlib import Path
+from dotenv import load_dotenv
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
+# تحميل المتغيرات البيئية من ملف .env
+load_dotenv()
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
-
-# --- 2. إعدادات الأمان (تقرأ الآن من ملف .env) ---
-# إذا لم يجد المفتاح في الملف، سيستخدم القيمة الافتراضية للحماية من الأخطاء
+# إعدادات الأمان
 SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-fallback-key')
-
-# تحويل النص 'True' من الملف إلى قيمة منطقية حقيقية
 DEBUG = os.getenv('DEBUG') == 'True'
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
-
-# Application definition
-
+# التطبيقات المثبتة
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -31,7 +21,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # سيتم إضافة تطبيقاتك الخاصة هنا مستقبلاً (مثل accounts, core...)
+    # تطبيقات المشروع
+    'academy',  # ✅ تمت إضافته
 ]
 
 MIDDLEWARE = [
@@ -49,10 +40,11 @@ ROOT_URLCONF = 'sacm_project.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
+                'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
@@ -63,9 +55,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'sacm_project.wsgi.application'
 
-
-# --- 3. إعدادات قاعدة البيانات (PostgreSQL) ---
-# تم تغييرها من sqlite3 لتقرأ بيانات الاتصال من ملف .env
+# قاعدة البيانات
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
@@ -77,45 +67,34 @@ DATABASES = {
     }
 }
 
-
-# Password validation
-# https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
-
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
+    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
-
-# Internationalization
-# https://docs.djangoproject.com/en/6.0/topics/i18n/
-
-# --- 4. إعدادات اللغة والوقت (مخصصة لمشروعك) ---
-LANGUAGE_CODE = 'ar'  # جعل لغة لوحة التحكم العربية
-
-TIME_ZONE = 'Asia/Aden' # توقيت اليمن
-
+# اللغة والتوقيت
+LANGUAGE_CODE = 'ar'
+TIME_ZONE = 'Asia/Aden'
 USE_I18N = True
-
 USE_TZ = True
 
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/6.0/howto/static-files/
-
+# الملفات الثابتة (Static)
 STATIC_URL = 'static/'
+STATICFILES_DIRS = [BASE_DIR / 'static']
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
-# Default primary key field type
-# https://docs.djangoproject.com/en/6.0/ref/settings/#default-auto-field
+# ملفات الوسائط (Media - لرفع الملفات)
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# ✅ تفعيل نموذج المستخدم المخصص
+AUTH_USER_MODEL = 'academy.User'
+
+# إعدادات تسجيل الدخول
+LOGIN_URL = 'login'
+LOGIN_REDIRECT_URL = 'dashboard'
+LOGOUT_REDIRECT_URL = 'login'
